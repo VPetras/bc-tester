@@ -1,0 +1,2 @@
+# bc-tester
+Moje dlouhodobka
