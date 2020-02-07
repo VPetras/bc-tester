@@ -1,27 +1,35 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
-import os
-import kivy
 from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty
-from kivy.lang import Builder
-from kivy.clock import Clock
-from kivy.graphics import *
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.config import Config
+from kivy.core.window import Window
+Window.fullscreen = False
 
-class MyApp(App):
-    #Metoda, která vrátí tlačítko, které se má zobrazit
+
+class MyScreenManager(ScreenManager):
+    pass
+
+
+class LoginScreen(Screen):
+
+    def check_password(self, instance, password):
+        if password == "pwd":
+            instance.current = "screen2"
+
+
+class Screen2(Screen):
+    pass
+
+
+class TestApp(App):
+    title = "HARDWARIO Tester 1.0"
+
     def build(self):
-        return Button(text = "Hello World!")
+        return MyScreenManager()
 
 
-if __name__ == "__main__":
-    Config.set('graphics', 'fullscreen', 'auto')
-    Config.set('graphics', 'window_state', 'maximized')
-    Config.write()
-    MyApp().run()
+if __name__ == '__main__':
+    Config.set('graphics', 'fullscreen', 'fake')
+    Config.set('graphics', 'window_state', 'visible') 
+    TestApp().run()
