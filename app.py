@@ -3,8 +3,7 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.config import Config
-from kivy.core.window import Window
-Window.fullscreen = False
+
 
 
 class MyScreenManager(ScreenManager):
