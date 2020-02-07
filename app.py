@@ -1,34 +1,35 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
+import os
+import sys
+import kivy
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.config import Config
+from kivy.uix.label import Label
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.widget import Widget
+from led import Led
 
-Config.set('graphics', 'fullscreen', '0')
-Config.write()
 
 
-class MyScreenManager(ScreenManager):
+class MyGrid(Widget):
     pass
 
 
-class LoginScreen(Screen):
-
-    def check_password(self, instance, password):
-        if password == "pwd":
-            instance.current = "screen2"
-
-
-class Screen2(Screen):
-    pass
-
-
-class TestApp(App):
-    title = "HARDWARIO Tester 1.0"
-
+class MyApp(App): # <- Main Class
     def build(self):
-        return MyScreenManager()
-
+        red = Led(37)
+        green = Led(33)
+        blue = Led(35)
+        yellow = Led(31)
+        return MyGrid()
 
 if __name__ == '__main__':
-    TestApp().run()
+    try:
+        MyApp().run()
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except Exception as e:
+        print('Exited with error: {}'.format(e))
+        sys.exit(1)
