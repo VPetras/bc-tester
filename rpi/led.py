@@ -2,8 +2,6 @@
 import RPi.GPIO as GPIO
 import time
 
-print('start')
-
 GPIO.setmode(GPIO.BOARD)
 
 class Led:
@@ -12,6 +10,7 @@ class Led:
     self.gpio = pin
     self.state = 0
     GPIO.setup(self.gpio, GPIO.OUT)
+    GPIO.output(self.gpio, 1)
 
   def on(self):
     GPIO.output(self.gpio, 0)
@@ -21,11 +20,7 @@ class Led:
     GPIO.output(self.gpio, 1)
     self.state = 1
 
-red = Led(37)
-green = Led(33)
-blue = Led(35)
-yellow = Led(31)
-
+#THIS IS ONLY TEST
 #try:
 # red = Led(37)
 # green = Led(33)

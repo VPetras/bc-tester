@@ -1,0 +1,62 @@
+# Filename: my.kv
+
+<MyGrid>:
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+
+        Label:
+            text: "Red"
+
+        GridLayout:
+            cols:2
+
+            Button:
+                text:"ON"
+                on_press: root.red_on()
+
+            Button:
+                text:"OFF"
+                on_press: root.red_off()
+
+        Label:
+            text: "Gren"
+
+        GridLayout:
+            cols:2
+
+            Button:
+                text:"ON"
+                on_press: root.green_on()
+
+            Button:
+                text:"OFF"
+                on_press: root.green_off()
+
+        Label:
+            text: "Blue"
+
+        GridLayout:
+            cols:2
+
+            Button:
+                text:"ON"
+                on_press: root.blue_on()
+
+            Button:
+                text:"OFF"
+                on_press: root.blue_off()
+        
+        Label:
+            text: "Yellow"
+
+        GridLayout:
+            cols:2
+
+            Button:
+                text:"ON"
+                on_press: root.yellow_on()
+
+            Button:
+                text:"OFF"
+                on_press: root.yellow_off()

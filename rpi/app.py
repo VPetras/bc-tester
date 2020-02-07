@@ -10,11 +10,37 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 import RPi.GPIO as GPIO
+from led import Led
 
-GPIO.setmode(GPIO.BOARD)
+red = Led(37)
+green = Led(33)
+blue = Led(35)
+yellow = Led(31)
 
 class MyGrid(Widget):
-    pass
+    def red_on(self):
+        red.on()
+
+    def red_off(self):
+        red.off()
+
+    def green_on(self):
+        green.on()
+
+    def green_off(self):
+        green.off()
+
+    def blue_on(self):
+        blue.on()
+
+    def blue_off(self):
+        blue.off()
+
+    def yellow_on(self):
+        yellow.on()
+
+    def yellow_off(self):
+        yellow.off()
 
 
 class MyApp(App): # <- Main Class
