@@ -4,6 +4,8 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.config import Config
 
+Config.set('graphics', 'fullscreen', '0')
+Config.write()
 
 
 class MyScreenManager(ScreenManager):
@@ -29,6 +31,4 @@ class TestApp(App):
 
 
 if __name__ == '__main__':
-    Config.set('graphics', 'fullscreen', 'fake')
-    Config.set('graphics', 'window_state', 'visible') 
     TestApp().run()
