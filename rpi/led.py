@@ -6,8 +6,8 @@ GPIO.setmode(GPIO.BOARD)
 
 class Led:
 
-  def __init__(self, pin):
-    self.gpio = pin
+  def __init__(self, gpio):
+    self.gpio = gpio
     self.state = 0
     GPIO.setup(self.gpio, GPIO.OUT)
     GPIO.output(self.gpio, 1)
