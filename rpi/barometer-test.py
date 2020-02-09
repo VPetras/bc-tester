@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
-# Distributed with a free-will license.
-
-# Use it any way you want, profit or free, provided it fits in the licenses of its associated works.
-
-# MPL3115A2
-
-# This code is designed to work with the MPL3115A2_I2CS I2C Mini Module
-
 import smbus
-
 import time
-
-# Get I2C bus
 
 bus = smbus.SMBus(1)
 

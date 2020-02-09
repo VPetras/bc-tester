@@ -2,19 +2,23 @@
 from ina219 import INA219
 from ina219 import DeviceRangeError
 
-SHUNT_OHMS = 0.1
-MAX_EXPECTED_AMPS = 0.2
+SHUNT_OHMS = 1000
+MAX_EXPECTED_AMPS = 0.001
 
 
 def read():
-    ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS)
-    ina.configure(ina.RANGE_16V)
+    ina = INA219(SHUNT_OHMS, address=0x41)
+    ina.configure(voltage_range=ina.RANGE_16V,
+              gain=ina.GAIN_AUTO,
+              bus_adc=ina.ADC_128SAMP,
+              shunt_adc=ina.ADC_128SAMP)
 
-    print("Bus Voltage: %.3f V" % ina.voltage())
+    print("Supply Voltage: %.9f V" % ina.supply_voltage())
+    print("Bus Voltage: %.9f V" % ina.voltage())
     try:
-        print("Bus Current: %.3f mA" % ina.current())
-        print("Power: %.3f mW" % ina.power())
-        print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
+        print("Bus Current: %.3f uA" % (ina.current()*1000))
+        print("Power: %.6f mW" % ina.power())
+        print("Shunt voltage: %.6f mV" % ina.shunt_voltage())
     except DeviceRangeError as e:
         # Current out of device range with specified shunt resistor
         print(e)
