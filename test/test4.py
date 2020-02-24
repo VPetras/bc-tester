@@ -14,6 +14,8 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
 from kivy.base import runTouchApp
 from kivy.uix.floatlayout import FloatLayout
+import threading
+import time
 
 module = {'1':'Core Module R2.2',
             '2':'Core Module R2.3',
@@ -45,10 +47,11 @@ module = {'1':'Core Module R2.2',
 
 class MainScreen(FloatLayout):
 
+
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+        self.app = MultiThreading()
         self.dropdown = DropDown()
-
         for x in module: 
             btn = Button(text = module[x], size_hint_y = None, height = 80,font_size = 30) 
             btn.bind(on_release = lambda btn: self.dropdown.select(btn.text)) 
@@ -68,25 +71,68 @@ class MainScreen(FloatLayout):
         self.add_widget(self.mainStatusSign)
         self.mainConsumptionSign = Label(text ="Consumption:",font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.0, 'y':0.65}, halign="right")
         self.add_widget(self.mainConsumptionSign)
+        self.mainStatus = Label(text ="",color=[1, 0.5, 0, 1],font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.1, 'y':0.7})
+        self.add_widget(self.mainStatus)
+        self.mainConsumption = Label(text ="",color=[1, 0.5, 0, 1],font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.1, 'y':0.65})
+        self.add_widget(self.mainConsumption)
         
     def callback(self, instance, x):
         print("The chosen mode is: {0}".format(x))
         if x == 'PIR Module':
             self.show()
+            self.app.run()
         if x == 'Climate Module':
             self.disable()
+            self.app.stop()
 
 
     def show(self):
-
-        self.mainStatus = Label(text ="Waiting",color=[1, 0.5, 0, 1],font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.1, 'y':0.7})
-        self.add_widget(self.mainStatus)
-        self.mainConsumption = Label(text ="No data yet",color=[1, 0.5, 0, 1],font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.1, 'y':0.65})
-        self.add_widget(self.mainConsumption)
+        self.mainStatus.text='Waiting'
+        self.mainConsumption='No data yet'
 
     def disable(self):
-        self.remove_widget(self.mainStatus)
-        self.remove_widget(self.mainConsumption)
+        self.mainStatus.text=''
+        self.mainConsumption=''
+
+def test():
+    while True:
+        print('test')
+        time.sleep(1)
+
+class MultiThreading:
+
+    def __init__(self):
+        self.thread = None
+        self.started = False
+
+    def threaded_program(self):
+        while self.started:
+            print("running")
+            print('1')
+            time.sleep(1)
+            print('2')
+            time.sleep(1)
+            print('3')
+            time.sleep(1)
+            print('4')
+            time.sleep(1)
+            print('5')
+            time.sleep(1)
+            print('6')
+            time.sleep(1)
+            print('7')
+            time.sleep(1)
+            print('8')
+            time.sleep(1)
+
+    def run(self):
+        self.started = True
+        self.thread = threading.Thread(target=self.threaded_program, args=())
+        self.thread.start()
+
+    def stop(self):
+        self.started = False
+        #self.thread.join()
 
 class TesterApp(App):
 
