@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+#generic
 import os
 import sys
 import threading
 import time
+#kivy
 import kivy
 from kivy.app import App
 from kivy.uix.label import Label
@@ -17,66 +19,33 @@ from kivy.uix.widget import Widget
 from kivy.base import runTouchApp
 from kivy.uix.floatlayout import FloatLayout
 from kivy.clock import Clock
-
-module = {'1':'Core Module R2.2',
-            '2':'Core Module R2.3',
-            '3':'Core Module NR',
-            '4':'Climate Module',
-            '5':'PIR Module',
-            '6':'Button Module',
-            '7':'LCD Module',
-            '8':'CO2 Module',
-            '9':'GPS Module',
-            '10':'Sensor Module',
-            '11':'Relay Module',
-            '12':'Encoder Module',
-            '13':'Power Module',
-            '14':'LoRa Module',
-            '15':'Sigfox Module',
-            '16':'1-Wire Module',
-            '17':'Infra Grid Module',
-            '18':'Battery Module',
-            '19':'Mini Battery Module',
-            '20':'Temperature Tag',
-            '21':'Humidity Tag',
-            '22':'Barometer Tag',
-            '23':'Lux Meter Tag',
-            '24':'NFC Tag',
-            '25':'VOC Tag',
-            '26':'VOC-LP Tag'}
-
-sign = {'0':'Status',
-        '1':'Consumpption',
-        '2':'VDD',
-        '3':'TMP112',
-        '4':'ACC',
-        '5':'ATSHA',
-        '6':'RX',
-        '7':'TX',
-        '8':'pins',
-        '9':''}
-
-data = {'0':'Waiting for start',
-        '1':'No data yet',
-        '2':'No data yet',
-        '3':'No data yet',
-        '4':'No data yet',
-        '5':'No data yet',
-        '6':'No data yet',
-        '7':'No data yet',
-        '8':'No data yet',
-        '9':''}
-
-status = {'0':['!',[1, 0, 0, 1]],
-          '1':['!',[1, 0, 0, 1]],
-          '2':['!',[1, 0, 0, 1]],
-          '3':['!',[1, 0, 0, 1]],
-          '4':['!',[1, 0, 0, 1]],
-          '5':['!',[1, 0, 0, 1]],
-          '6':['!',[1, 0, 0, 1]],
-          '7':['!',[1, 0, 0, 1]],
-          '8':['!',[1, 0, 0, 1]],
-          '9':['',[1, 0, 0, 1]]}
+#test sequences
+from CoreModuleR22 import CoreModuleR22
+from CoreModuleR23 import CoreModuleR23
+from CoreModuleNR import CoreModuleNR
+from ClimateModule import ClimateModule
+from PIRModule import PIRModule
+from ButtonModule import ButtonModule
+from LCDModule import LCDModule
+from CO2Module import CO2Module
+from GPSModule import GPSModule
+from SensorModule import SensorModule
+from RelayModule import RelayModule
+from EncoderModule import EncoderModule
+from PowerModule import PowerModule
+from LoRaModule import LoRaModule
+from SigfoxModule import SigfoxModule
+from OneWireModule import OneWireModule
+from InfraGridModule import InfraGridModule
+from BatteryModule import BatteryModule
+from MiniBatteryModule import MiniBatteryModule
+from TemperatureTag import TemperatureTag
+from HumidityTag import HumidityTag
+from BarometerTag import BarometerTag
+from LuxMeterTag import LuxMeterTag
+from NFCTag import NFCTag
+from VOCTag import VOCTag
+from VOC_LPTag import VOC_LPTag
 
 class MainScreen(FloatLayout):
 
@@ -84,46 +53,198 @@ class MainScreen(FloatLayout):
         super(MainScreen, self).__init__(**kwargs)
         self.dropdown = DropDown()
 
-        for x in module: 
-            btn = Button(text = module[x], size_hint_y = None, height = 80,font_size = 30) 
+        self.thread = None
+        self.started = False
+        self.testing_module = ''
+
+        self.module = {'1':'Core Module R2.2',
+                       '2':'Core Module R2.3',
+                       '3':'Core Module NR',
+                       '4':'Climate Module',
+                       '5':'PIR Module',
+                       '6':'Button Module',
+                       '7':'LCD Module',
+                       '8':'CO2 Module',
+                       '9':'GPS Module',
+                       '10':'Sensor Module',
+                       '11':'Relay Module',
+                       '12':'Encoder Module',
+                       '13':'Power Module',
+                       '14':'LoRa Module',
+                       '15':'Sigfox Module',
+                       '16':'1-Wire Module',
+                       '17':'Infra Grid Module',
+                       '18':'Battery Module',
+                       '19':'Mini Battery Module',
+                       '20':'Temperature Tag',
+                       '21':'Humidity Tag',
+                       '22':'Barometer Tag',
+                       '23':'Lux Meter Tag',
+                       '24':'NFC Tag',
+                       '25':'VOC Tag',
+                       '26':'VOC-LP Tag'}
+
+        self.testing_sequence = {'Core Module R2.2': 'CoreModuleR22',
+                                'Core Module R2.3': 'CoreModuleR23',
+                                'Core Module NR': 'CoreModuleNR',
+                                'Climate Module': 'ClimateModule',
+                                'PIR Module': 'PIRModule',
+                                'Button Module': 'ButtonModule',
+                                'LCD Module': 'LCDModule',
+                                'CO2 Module': 'CO2Module',
+                                'GPS Module': 'GPSModule',
+                                'Sensor Module': 'SensorModule',
+                                'Relay Module': 'RelayModule',
+                                'Encoder Module': 'EncoderModule',
+                                'Power Module': 'PowerModule',
+                                'LoRa Module': 'LoRaModule',
+                                'Sigfox Module': 'SigfoxModule',
+                                '1-Wire Module': 'OneWireModule',
+                                'Infra Grid Module': 'InfraGridModule',
+                                'Battery Module': 'BatteryModule',
+                                'Mini Battery Module': 'MiniBatteryModule',
+                                'Temperature Tag': 'TemperatureTag',
+                                'Humidity Tag': 'HumidityTag',
+                                'Barometer Tag': 'BarometerTag',
+                                'Lux Meter Tag': 'LuxMeterTag',
+                                'NFC Tag': 'NFCTag',
+                                'VOC Tag': 'VOCTag',
+                                'VOC-LP Tag': 'VOC_LPTag'}
+
+        self.sign = {'0':['Status',[1, 1, 1, 1]],
+                     '1':['',[1, 1, 1, 1]],
+                     '2':['',[1, 1, 1, 1]],
+                     '3':['',[1, 1, 1, 1]],
+                     '4':['',[1, 1, 1, 1]],
+                     '5':['',[1, 1, 1, 1]],
+                     '6':['',[1, 1, 1, 1]],
+                     '7':['',[1, 1, 1, 1]],
+                     '8':['',[1, 1, 1, 1]],
+                     '9':['',[1, 1, 1, 1]]}
+
+        self.data = {'0':['Waiting for choice module',[1, 1, 1, 1]],
+                     '1':['',[1, 1, 1, 1]],
+                     '2':['',[1, 1, 1, 1]],
+                     '3':['',[1, 1, 1, 1]],
+                     '4':['',[1, 1, 1, 1]],
+                     '5':['',[1, 1, 1, 1]],
+                     '6':['',[1, 1, 1, 1]],
+                     '7':['',[1, 1, 1, 1]],
+                     '8':['',[1, 1, 1, 1]],
+                     '9':['',[1, 1, 1, 1]]}
+
+        self.status = {'0':['',[1, 0, 0, 1]],
+                       '1':['',[1, 0, 0, 1]],
+                       '2':['',[1, 0, 0, 1]],
+                       '3':['',[1, 0, 0, 1]],
+                       '4':['',[1, 0, 0, 1]],
+                       '5':['',[1, 0, 0, 1]],
+                       '6':['',[1, 0, 0, 1]],
+                       '7':['',[1, 0, 0, 1]],
+                       '8':['',[1, 0, 0, 1]],
+                       '9':['',[1, 0, 0, 1]]}
+
+        for x in self.module: 
+            btn = Button(text = self.module[x], size_hint_y = None, height = 80,font_size = 30) 
             btn.bind(on_release = lambda btn: self.dropdown.select(btn.text)) 
             self.dropdown.add_widget(btn)
 
         self.mainlabel = Label(text ="HARDWARIO Tester",font_size = 40, size_hint=(1, 0.2), pos_hint={'x':0, 'y':0.8})
         self.githublabel = Label(text ="github.com/VPetras/bc-tester",font_size = 25, size_hint=(1.6, 0.1), pos_hint={'x':0.08, 'y':0})
         self.mainbutton = Button(text ='Choice Modul which you wanna test',font_size = 30, size_hint=(0.3, 0.1), pos_hint={'x':0.01, 'y':0.75})
+        self.button = Button(text ='end testing',font_size = 30, size_hint=(0.3, 0.1), pos_hint={'x':0.35, 'y':0.01})
+        self.button.bind(on_press = self.stop_btn)
         self.mainbutton.bind(on_release = self.dropdown.open)
         self.dropdown.bind(on_select = lambda instance, x: setattr(self.mainbutton, 'text', x))
         self.dropdown.bind(on_select = self.callback)
         self.add_widget(self.mainlabel)
         self.add_widget(self.githublabel)
         self.add_widget(self.mainbutton)
+        self.add_widget(self.button)
+        self.button.disabled=True
 
         self.show()
-        
+        self.update()
+    
+    def threaded_program(self):
+        self.mainbutton.disabled = True
+        self.button.disabled = False
+        self.running = True
+
+        print(self.testing_module)
+        seq = self.testing_sequence[self.testing_module]
+        print(seq)
+        print(self.sign)
+        seq = globals()[seq]()
+        self.sign = seq.sign
+        self.update()
+        print(self.sign)
+
+        while self.started:
+            print("running module test")
+
+            self.sign = seq.sign
+            self.update()
+
+            seq.test0()
+
+            time.sleep(1)
+
+            self.data = seq.data
+            self.update()
+
+            seq.test1()
+            time.sleep(1)
+
+            self.data = seq.data
+            self.update()
+
+            seq.test2()
+            time.sleep(1)
+
+            self.data = seq.data
+            self.update()
+
+            seq.test3()
+            time.sleep(1)
+
+            self.data = seq.data
+            self.update()
+
+            time.sleep(1)
+            seq.clean()
+            self.data = seq.data
+            self.update()
+
+            time.sleep(1)
+   
+        self.running = False
+        print('thread is gone')
+        self.mainbutton.disabled = False
+        self.button.disabled=True
+        self.erase()
+
+    def stop(self):
+        print("stoping module test")
+        self.started = False
+
+    def start(self):
+        if(self.started != True):
+            print('starting thread')
+            self.started = True
+            self.thread = threading.Thread(target=self.threaded_program, args=())
+            self.thread.start()
+
+    def stop_btn(self, x):
+        print(x.text)
+        self.stop()
+
     def callback(self, instance, x):
-        print("The chosen mode is: {0}".format(x))
-        if x == module['1']:
-            sequence.run(x)
-            self.update(sign, data, status)
-            print('1')
-        elif x == module['2']:
-            sequence.stop()
-            print('2')
-        elif x == module['3']:
-            print('3')
-        elif x == module['4']:
-            print('4')
-        elif x == module['5']:
-            print('5')
-        elif x == module['6']:
-            print('6')
-        elif x == module['7']:
-            print('7')
-        elif x == module['8']:
-            print('8')
-        elif x == module['9']:
-            print('9')
+        for i in range(len(self.module)):
+            if x == self.module[str(i+1)]:
+                print(self.module[str(i+1)])
+                self.testing_module = x
+                self.start()
 
     def show(self):
         
@@ -193,95 +314,64 @@ class MainScreen(FloatLayout):
         self.add_widget(self.status8)
         self.add_widget(self.status9)      
 
-    def update(self, sign, data, status):
-        self.sign0.text=sign['0']
-        self.sign1.text=sign['1']
-        self.sign2.text=sign['2']
-        self.sign3.text=sign['3']
-        self.sign4.text=sign['4']
-        self.sign5.text=sign['5']
-        self.sign6.text=sign['6']
-        self.sign7.text=sign['7']
-        self.sign8.text=sign['8']
-        self.sign9.text=sign['9']
+    def update(self):
 
-        self.data0.text=data['0']
-        self.data1.text=data['1']
-        self.data2.text=data['2']
-        self.data3.text=data['3']
-        self.data4.text=data['4']
-        self.data5.text=data['5']
-        self.data6.text=data['6']
-        self.data7.text=data['7']
-        self.data8.text=data['8']
-        self.data9.text=data['9']
+        self.sign0.text=self.sign['0'][0]
+        self.sign1.text=self.sign['1'][0]
+        self.sign2.text=self.sign['2'][0]
+        self.sign3.text=self.sign['3'][0]
+        self.sign4.text=self.sign['4'][0]
+        self.sign5.text=self.sign['5'][0]
+        self.sign6.text=self.sign['6'][0]
+        self.sign7.text=self.sign['7'][0]
+        self.sign8.text=self.sign['8'][0]
+        self.sign9.text=self.sign['9'][0]
 
-        self.status0.text=status['0'][0]
-        self.status0.color=status['0'][1]
-        self.status1.text=status['1'][0]
-        self.status1.color=status['1'][1]
-        self.status2.text=status['2'][0]
-        self.status2.color=status['2'][1]
-        self.status3.text=status['3'][0]
-        self.status3.color=status['3'][1]
-        self.status4.text=status['4'][0]
-        self.status4.color=status['4'][1]
-        self.status5.text=status['5'][0]
-        self.status5.color=status['5'][1]
-        self.status6.text=status['6'][0]
-        self.status6.color=status['6'][1]
-        self.status7.text=status['7'][0]
-        self.status7.color=status['7'][1]
-        self.status8.text=status['8'][0]
-        self.status8.color=status['8'][1]
-        self.status9.text=status['9'][0]
-        self.status9.color=status['9'][1]
+        self.data0.text=self.data['0'][0]
+        self.data1.text=self.data['1'][0]
+        self.data2.text=self.data['2'][0]
+        self.data3.text=self.data['3'][0]
+        self.data4.text=self.data['4'][0]
+        self.data5.text=self.data['5'][0]
+        self.data6.text=self.data['6'][0]
+        self.data7.text=self.data['7'][0]
+        self.data8.text=self.data['8'][0]
+        self.data9.text=self.data['9'][0]
 
-class test_sequence():
+        #for i in range(10):
+        #    data = getattr(self, 'data{}'.format(i))
+        #    assert data
+        #    data.text = self.data[str(i)]
 
-    def __init__(self):
-        self.thread = None
-        self.started = False
-        self.running = False
-        self.module = ''
-
-    def threaded_program(self):
-        self.running = True
-        while self.started:
-            print("running {}. module test".format(self.module))
-            print('1')
-            time.sleep(1)
-            print('2')
-            time.sleep(1)
-            print('3')
-            time.sleep(1)
-            print('4')
-            time.sleep(1)
-            print('5')
-            time.sleep(1)
-            print('6')
-            time.sleep(1)
-            print('7')
-            time.sleep(1)
-            print('8')
-            time.sleep(1)
-        self.running = False
-        print('thread is gone')
-
-    def run(self, module):
-        if(self.started != True):
-            print('starting thread')
-            data['0'] = 'Start TEST'
-            MainScreen().update(sign, data, status)
-            self.started = True
-            self.module = module
-            self.thread = threading.Thread(target=self.threaded_program, args=())
-            self.thread.start()
-
-    def stop(self):
-        print("stoping {}. module test".format(self.module))
-        self.started = False
-        #self.thread.join()
+        self.status0.text=self.status['0'][0]
+        self.status0.color=self.status['0'][1]
+        self.status1.text=self.status['1'][0]
+        self.status1.color=self.status['1'][1]
+        self.status2.text=self.status['2'][0]
+        self.status2.color=self.status['2'][1]
+        self.status3.text=self.status['3'][0]
+        self.status3.color=self.status['3'][1]
+        self.status4.text=self.status['4'][0]
+        self.status4.color=self.status['4'][1]
+        self.status5.text=self.status['5'][0]
+        self.status5.color=self.status['5'][1]
+        self.status6.text=self.status['6'][0]
+        self.status6.color=self.status['6'][1]
+        self.status7.text=self.status['7'][0]
+        self.status7.color=self.status['7'][1]
+        self.status8.text=self.status['8'][0]
+        self.status8.color=self.status['8'][1]
+        self.status9.text=self.status['9'][0]
+        self.status9.color=self.status['9'][1]
+        
+    def erase(self):
+        for i in range(10):
+            self.sign[str(i)][0] = ''
+            self.data[str(i)][0] = ''
+            self.status[str(i)][0] = ''
+        self.sign['0'][0] = 'Status'
+        self.data['0'][0] = 'Waiting for choice module'
+        self.update()
 
 class GuiApp(App):
 
@@ -290,7 +380,6 @@ class GuiApp(App):
         
 if __name__ == '__main__':
     try:
-        sequence = test_sequence()
         GuiApp().run()
     except KeyboardInterrupt:
         sys.exit(1)
