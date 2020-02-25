@@ -1,0 +1,11 @@
+__pycache__/
+*pyc
+build/
+dist/
+bcf.egg-info/
+dfu-help.*
+.venv/
+.cache/
+.vscode/
+bch-tester-core2/
+bch-tester-lora-module/
