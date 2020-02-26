@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#generic
-import os
-import sys
-import threading
-import time
-#kivy
-import kivy
+"""This is the Hardwario Tester.
+
+This module does start GUI and threared function
+"""
+
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
@@ -19,7 +17,11 @@ from kivy.uix.widget import Widget
 from kivy.base import runTouchApp
 from kivy.uix.floatlayout import FloatLayout
 from kivy.clock import Clock
-#test sequences
+import os
+import sys
+import threading
+import time
+import kivy
 from sequences.CoreModuleR22 import CoreModuleR22
 from sequences.CoreModuleR23 import CoreModuleR23
 from sequences.CoreModuleNR import CoreModuleNR
@@ -166,57 +168,71 @@ class MainScreen(FloatLayout):
         self.show()
         self.update()
     
-    def threaded_program(self):
-        self.mainbutton.disabled = True
-        self.button.disabled = False
-        self.running = True
-
-        print(self.testing_module)
+    def runtime_module_test(self):
         seq = self.testing_sequence[self.testing_module]
-        print(seq)
-        print(self.sign)
         seq = globals()[seq]()
         self.sign = seq.sign
         self.update()
-        print(self.sign)
 
         while self.started:
+
             print("running module test")
 
             self.sign = seq.sign
+            self.data = seq.data
+            self.status = seq.status
             self.update()
 
             seq.test0()
 
             time.sleep(1)
 
+            self.sign = seq.sign
             self.data = seq.data
+            self.status = seq.status
             self.update()
 
             seq.test1()
             time.sleep(1)
 
+            self.sign = seq.sign
             self.data = seq.data
+            self.status = seq.status
             self.update()
 
             seq.test2()
             time.sleep(1)
 
+            self.sign = seq.sign
             self.data = seq.data
+            self.status = seq.status
             self.update()
 
             seq.test3()
             time.sleep(1)
 
+            self.sign = seq.sign
             self.data = seq.data
+            self.status = seq.status
             self.update()
 
             time.sleep(1)
             seq.clean()
+            self.sign = seq.sign
             self.data = seq.data
+            self.status = seq.status
             self.update()
 
             time.sleep(1)
+
+    def threaded_program(self):
+        self.mainbutton.disabled = True
+        self.button.disabled = False
+        self.running = True
+
+        print(self.testing_module)
+
+        self.runtime_module_test()
    
         self.running = False
         print('thread is gone')
@@ -229,11 +245,13 @@ class MainScreen(FloatLayout):
         self.started = False
 
     def start(self):
-        if(self.started != True):
-            print('starting thread')
-            self.started = True
-            self.thread = threading.Thread(target=self.threaded_program, args=())
-            self.thread.start()
+        if self.started:
+            return
+
+        print('starting thread')
+        self.started = True
+        self.thread = threading.Thread(target=self.threaded_program, args=())
+        self.thread.start()
 
     def stop_btn(self, x):
         print(x.text)
@@ -247,7 +265,6 @@ class MainScreen(FloatLayout):
                 self.start()
 
     def show(self):
-        
         self.sign0 = Label(text ='',font_size = 35, size_hint=(1, 0.2), pos_hint={'x':0.0, 'y':0.70})
         self.sign1 = Label(text ='',font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.0, 'y':0.65})
         self.sign2 = Label(text ='',font_size = 30, size_hint=(1, 0.2), pos_hint={'x':0.0, 'y':0.60})
@@ -315,7 +332,6 @@ class MainScreen(FloatLayout):
         self.add_widget(self.status9)      
 
     def update(self):
-
         self.sign0.text=self.sign['0'][0]
         self.sign1.text=self.sign['1'][0]
         self.sign2.text=self.sign['2'][0]
@@ -374,8 +390,8 @@ class MainScreen(FloatLayout):
         self.update()
 
 class GuiApp(App):
-
     def build(self):
+        self.title = 'HARDWARIO Tester v1.0'
         return MainScreen()
         
 if __name__ == '__main__':
