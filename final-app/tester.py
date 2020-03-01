@@ -255,6 +255,7 @@ class MainScreen(FloatLayout):
 
     def stop_btn(self, x):
         print(x.text)
+        self.button.disabled = True
         self.stop()
 
     def callback(self, instance, x):

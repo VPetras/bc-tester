@@ -37,12 +37,12 @@ class CoreModuleR23():
                        '8':['',[1, 0, 0, 1]],
                        '9':['',[1, 0, 0, 1]]}
         
-        self.min_VDD = 3
-        self.max_VDD = 3.3
-        self.min_consumption = 1.3
-        self.max_consumption = 2.3
-        self.min_temp = 21
-        self.max_temp = 25
+        self.MIN_VDD = 3
+        self.MAX_VDD = 3.3
+        self.MIN_CONSUMPTION = 1.3
+        self.MAX_CONSUMPTION = 2.3
+        self.MIN_TEMP = 21
+        self.MAX_TEMP = 25
 
     def clean(self):
         self.sign = {'0':['Status',[1, 1, 1, 1]],
@@ -85,17 +85,35 @@ class CoreModuleR23():
     def test1(self):
         print('test1')
         Volts = 3.235
-        self.data['1'][0] = '3.245 V'
+        self.data['1'][0] = '{:.2f} V'.format(Volts)
+        if Volts >= self.MIN_VDD and Volts <= self.MAX_VDD:
+            self.status['1'][0] = 'OK'
+            self.status['1'][1] = [0,1,0,1]
+        else:
+            self.status['1'][0] = 'NOK'
+            self.status['1'][1] = [1,0,0,1]
 
     def test2(self):
         print('test2')
         uAmp = 2.3
-        self.data['2'][0] = '2.3 uA'
+        self.data['2'][0] = '{:.1f} uA'.format(uAmp)
+        if uAmp >= self.MIN_CONSUMPTION and uAmp <= self.MAX_CONSUMPTION:
+            self.status['2'][0] = 'OK'
+            self.status['2'][1] = [0,1,0,1]
+        else:
+            self.status['2'][0] = 'NOK'
+            self.status['2'][1] = [1,0,0,1]
 
     def test3(self):
         print('test3')
         Temp = 26.5
-        self.data['3'][0] = '15 °C'
+        self.data['3'][0] = '{:.2f} °C'.format(Temp)
+        if Temp >= self.MIN_TEMP and Temp <= self.MAX_TEMP:
+            self.status['3'][0] = 'OK'
+            self.status['3'][1] = [0,1,0,1]
+        else:
+            self.status['3'][0] = 'NOK'
+            self.status['3'][1] = [1,0,0,1]
 
     def test4(self):
         print('test4')
