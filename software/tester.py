@@ -216,6 +216,14 @@ class MainScreen(FloatLayout):
             self.status = seq.status
             self.update()
 
+            seq.test4()
+            time.sleep(1)
+
+            self.sign = seq.sign
+            self.data = seq.data
+            self.status = seq.status
+            self.update()
+
             time.sleep(1)
             seq.clean()
             self.sign = seq.sign
